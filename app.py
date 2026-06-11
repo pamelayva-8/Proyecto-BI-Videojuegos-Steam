@@ -555,17 +555,14 @@ def entrenar_modelo(url):
  
     if 'os_score' not in df_model.columns:
         df_model['os_score'] = df_model[['windows', 'mac', 'linux']].sum(axis=1)
-
-    #  Preparación de variables de Género (Multi-hot encoding para el Top 10)
-top_10_genres = ['Indie', 'Adventure', 'Action', 'Casual', 'Simulation', 'Strategy', 'RPG', 'Early Access', 'Free To Play', 'Sports']
-
-for genre in top_10_genres:
-    df[f'genre_{genre}'] = df['genres'].apply(lambda x: 1 if isinstance(x, list) and genre in x else 0)
  
     variables_modelo = [
         'price', 'peak_ccu_log', 'total_languages', 'tipo_publisher',
-        'owners_numeric', 'dlc_count', 'os_score', 'achievements'
-    ]  + [f'genre_{g}' for g in top_10_genres]
+        'owners_numeric', 'achievements', 'dlc_count', 'os_score',
+        'genre_Indie', 'genre_Adventure', 'genre_Action', 'genre_Casual',
+        'genre_Simulation', 'genre_Strategy', 'genre_RPG',
+        'genre_Early Access', 'genre_Free To Play', 'genre_Sports'
+    ]
  
     cols = [c for c in variables_modelo if c in df_model.columns]
     df_ml = df_model[cols + ['rating']].dropna()
@@ -601,7 +598,7 @@ with col1:
 with col2:
     st.metric("Error promedio (MAE)", f"± {round(mae, 2)}%",
               help="En promedio, el modelo se equivoca este % al estimar el rating")
- 
+
 
  
 # Importancia de variables
