@@ -32,7 +32,7 @@ st.divider()
 
 # DATA----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-url = "https://github.com/pamelayva-8/Proyecto-BI-Videojuegos-Steam/raw/refs/heads/main/steam_limpio_2.csv"
+url = "https://github.com/pamelayva-8/Proyecto-BI-Videojuegos-Steam/raw/refs/heads/main/steam_limpio_3.csv"
 
 
 
