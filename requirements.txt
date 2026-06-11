@@ -5,3 +5,5 @@ seaborn
 requests
 folium
 streamlit-folium
+joblib
+scikit-learn
