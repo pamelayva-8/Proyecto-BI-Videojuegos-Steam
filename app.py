@@ -366,7 +366,7 @@ st.divider()
 
 st.markdown("### Machine Learning: ")
 st.info("""
-Se utilizó un modelo Random Forest para estimar su calificación o rating por medio de las variables que tienen mayor influencia sobre la calificación positiva de un videojuego.
+Se utilizó un modelo Random Forest para estimar su calificación o rating por medio de las variables que tienen mayor influencia sobre la calificación positiva de un videojuego
 """)
 
 st.divider()
