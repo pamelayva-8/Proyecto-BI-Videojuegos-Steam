@@ -2,6 +2,10 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import joblib
+import numpy as np
+from sklearn.metrics import r2_score, mean_absolute_error
+from sklearn.model_selection import train_test_split
 
 
 # HEADER
@@ -531,11 +535,105 @@ Permite identificar qué tipos de videojuegos suelen recibir mejores calificacio
 st.divider()
 #ML ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-st.markdown("### Machine Learning: ")
+st.markdown("### Machine Learning: Random Forest ")
 st.info("""
-Se utilizó un modelo Random Forest para estimar su calificación o rating por medio de las variables que tienen mayor influencia sobre la calificación positiva de un videojuego
+Se  utilizó un modelo Random Forest Regressor para identificar qué características del videojuego tienen mayor influencia sobre su calificación positiva. Se ajustaron los hiperparámetros del modelo
+(n_estimators=500, max_depth=20, min_samples_split=5) para mejorar su desempeño.
 """)
-
+  
+@st.cache_resource
+def cargar_modelo():
+    return joblib.load("modelo_steam_rf.pkl")
+ 
+modelo = cargar_modelo()
+ 
+# Preparar variables igual que en el notebook
+variables_modelo = [
+    'price', 'peak_ccu_log', 'total_languages', 'tipo_publisher',
+    'owners_numeric', 'achievements', 'dlc_count', 'os_score',
+    'genre_Indie', 'genre_Adventure', 'genre_Action', 'genre_Casual',
+    'genre_Simulation', 'genre_Strategy', 'genre_RPG',
+    'genre_Early Access', 'genre_Free To Play', 'genre_Sports'
+]
+ 
+# Calcular peak_ccu_log y os_score si no existen
+if 'peak_ccu_log' not in df.columns:
+    df['peak_ccu_log'] = np.log1p(df['peak_ccu'])
+ 
+if 'os_score' not in df.columns:
+    df['os_score'] = df[['windows', 'mac', 'linux']].sum(axis=1)
+ 
+cols_disponibles = [c for c in variables_modelo if c in df.columns]
+df_ml = df[cols_disponibles + ['rating']].dropna()
+ 
+X = df_ml[cols_disponibles]
+y = df_ml['rating']
+ 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+y_pred = modelo.predict(X_test)
+ 
+r2  = r2_score(y_test, y_pred)
+mae = mean_absolute_error(y_test, y_pred)
+ 
+# Métricas
+col1, col2 = st.columns(2)
+with col1:
+    st.metric("R² Score", round(r2, 4),
+              help="Qué tan bien explica el modelo la variación del rating (1.0 = perfecto)")
+with col2:
+    st.metric("Error promedio (MAE)", f"± {round(mae, 2)}%",
+              help="En promedio, el modelo se equivoca este % al estimar el rating")
+ 
+st.divider()
+ 
+# Importancia de variables
+st.markdown("#### ¿Qué características influyen más en el rating?")
+ 
+nombres_legibles = {
+    'price':              'Precio',
+    'peak_ccu_log':       'Pico de jugadores simultáneos (log)',
+    'total_languages':    'Cantidad de idiomas',
+    'tipo_publisher':     'Tipo de publisher',
+    'owners_numeric':     'Estimado de propietarios',
+    'achievements':       'Logros (achievements)',
+    'dlc_count':          'Número de DLCs',
+    'os_score':           'Sistemas operativos soportados',
+    'genre_Indie':        'Género: Indie',
+    'genre_Adventure':    'Género: Aventura',
+    'genre_Action':       'Género: Acción',
+    'genre_Casual':       'Género: Casual',
+    'genre_Simulation':   'Género: Simulación',
+    'genre_Strategy':     'Género: Estrategia',
+    'genre_RPG':          'Género: RPG',
+    'genre_Early Access': 'Género: Early Access',
+    'genre_Free To Play': 'Género: Free to Play',
+    'genre_Sports':       'Género: Deportes',
+}
+ 
+importancias = pd.DataFrame({
+    'Variable':    [nombres_legibles.get(v, v) for v in cols_disponibles],
+    'Importancia': modelo.feature_importances_
+}).sort_values('Importancia', ascending=True).tail(10)
+ 
+fig, ax = plt.subplots(figsize=(9, 5))
+sns.barplot(data=importancias, x='Importancia', y='Variable', palette='Blues_r', ax=ax)
+ax.set_title('Top 10 variables con mayor influencia en el rating', fontweight='bold')
+ax.set_xlabel('Importancia relativa')
+ax.set_ylabel('')
+st.pyplot(fig)
+ 
+st.success("""
+Las variables con mayor peso explican por qué un juego tiene buena calificación.
+Características como logros, idiomas soportados y tipo de publisher son factores
+que un desarrollador puede considerar antes del lanzamiento.
+""")
+ 
+st.warning("""
+Variables como el pico de jugadores simultáneos y el estimado de
+propietarios son parcialmente consecuencia del éxito del juego. Se incluyen en el modelo
+pero se interpretan con cautela.
+""")
+ 
 st.divider()
 #Conclusiones----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 st.markdown("## Conclusiones")
