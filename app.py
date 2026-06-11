@@ -366,68 +366,70 @@ st.divider()
 #Gráfica 7: Idioma ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-st.markdown("### Estrategia de Localización (idioma)")
+st.markdown("### Rating según Cantidad de Idiomas")
 
-# Contar idiomas
 def contar_idiomas(x):
+
     if pd.isna(x):
         return 0
 
-    if isinstance(x, str):
-        return len([
+    return len(
+        [
             idioma.strip()
-            for idioma in x.split(',')
+            for idioma in str(x).split(',')
             if idioma.strip()
-        ])
+        ]
+    )
 
-    return 0
+df_idiomas = df_filtrado.copy()
 
-df_filtrado['total_languages'] = (
-    df_filtrado['supported_languages']
+df_idiomas['total_languages'] = (
+    df_idiomas['supported_languages']
     .apply(contar_idiomas)
 )
 
-# Segmentación
-def segmentar(total):
+def grupo_idiomas(n):
 
-    if total == 1:
-        return '1 idioma'
+    if n == 1:
+        return "1 idioma"
 
-    elif total <= 5:
-        return '2-5 idiomas'
+    elif n <= 5:
+        return "2-5 idiomas"
 
-    elif total <= 10:
-        return '6-10 idiomas'
+    elif n <= 10:
+        return "6-10 idiomas"
 
     else:
-        return '+10 idiomas'
+        return "+10 idiomas"
 
-df_filtrado['estrategia_idiomas'] = (
-    df_filtrado['total_languages']
-    .apply(segmentar)
+df_idiomas['grupo_idiomas'] = (
+    df_idiomas['total_languages']
+    .apply(grupo_idiomas)
 )
 
-idiomas_counts = (
-    df_filtrado['estrategia_idiomas']
-    .value_counts()
+idiomas_rating = (
+    df_idiomas
+    .groupby('grupo_idiomas')['rating']
+    .mean()
+    .reset_index()
 )
 
 fig, ax = plt.subplots(figsize=(8,5))
 
 sns.barplot(
-    x=idiomas_counts.index,
-    y=idiomas_counts.values,
+    data=idiomas_rating,
+    x='grupo_idiomas',
+    y='rating',
     ax=ax
 )
 
-ax.set_title("Estrategia de Localización")
-ax.set_ylabel("Cantidad de Juegos")
+ax.set_ylabel("Rating Promedio")
 
 st.pyplot(fig)
 
 st.info("""
-Los videojuegos multilingües son frecuentes en Steam.
-Ofrecer soporte para varios idiomas puede aumentar el alcance potencial de un videojuego.
+Esta gráfica analiza si ofrecer soporte para más idiomas está relacionado con una mejor calificación.
+Los videojuegos con mayor localización pueden alcanzar una audiencia más amplia.
 """)
 
 st.divider()
