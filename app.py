@@ -309,6 +309,60 @@ st.markdown("### Reputación del Publisher")
 st.info("""
 Se analizó si la reputación histórica de un publisher está relacionada con el desempeño de sus videojuegos.
 """)
+# Crear reputación del publisher
+publisher_stats = (
+    df_filtrado
+    .groupby('primary_publisher')['rating']
+    .median()
+    .rename('publisher_median_rating')
+)
+
+# Agregar columna al dataframe
+df_pub = df_filtrado.merge(
+    publisher_stats,
+    on='primary_publisher',
+    how='left'
+)
+
+# Variables para correlacionar
+vars_interes = [
+    'publisher_median_rating',
+    'rating',
+    'price',
+    'peak_ccu',
+    'owners_numeric',
+    'average_playtime_forever',
+    'dlc_count',
+    'achievements'
+]
+
+# Matriz de correlación
+matriz_corr = df_pub[vars_interes].corr()
+
+# Heatmap
+fig, ax = plt.subplots(figsize=(10,8))
+
+sns.heatmap(
+    matriz_corr,
+    annot=True,
+    cmap='coolwarm',
+    fmt='.2f',
+    linewidths=0.5,
+    ax=ax
+)
+
+ax.set_title(
+    'Correlación entre Reputación del Publisher y Otras Variables'
+)
+
+st.pyplot(fig)
+
+st.success("""
+La variable publisher_median_rating representa la reputación histórica del publisher.
+Si presenta correlaciones positivas con el rating, podría indicar que algunos distribuidores tienden a publicar juegos mejor valorados por los usuarios.
+""")
+
+st.divider()
 #ML
 
 st.markdown("### Machine Learning: ")
