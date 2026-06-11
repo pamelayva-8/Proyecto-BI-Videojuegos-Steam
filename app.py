@@ -46,6 +46,22 @@ df_filtrado = df[
     df['rating'] >= rating_min
 ]
 
+st.divided()
+
+#Sidebar índice
+st.sidebar.markdown("## Navegación")
+
+pagina = st.sidebar.radio(
+    "Ir a:",
+    [
+        "Inicio",
+        "Estadísticas",
+        "Visualizaciones",
+        "Machine Learning",
+        "Conclusiones"
+    ]
+)
+
 # CONTENT
 
 st.markdown("##  Videojuegos steam")
@@ -102,6 +118,36 @@ st.dataframe(
     ].describe().round(2)
 )
 st.divider()
+
+#Videojuegos
+
+st.markdown("### Top 10 videojuegos mejor calificados")
+
+top10 = df.sort_values(
+    by='rating',
+    ascending=False
+)[['name','rating','price']].head(10)
+
+st.dataframe(top10)
+
+st.divider()
+
+juego = st.text_input(
+    "Buscar videojuego"
+)
+
+if juego:
+    resultado = df[
+        df['name'].str.contains(
+            juego,
+            case=False,
+            na=False
+        )
+    ]
+
+    st.dataframe(resultado.head(20))
+
+st.divider()
 #Gráfica 1
 st.markdown("### Distribución del Rating")
 
@@ -117,6 +163,11 @@ sns.histplot(
 ax.set_title("Distribución del Rating")
 
 st.pyplot(fig)
+
+st.info("""
+Esta gráfica muestra cómo se distribuyen las calificaciones de los videojuegos. 
+La mayoría de los videojuegos presentan ratings superiores al 70%.
+""")
 st.divider()
 
 #Gráfica 2
@@ -154,4 +205,9 @@ sns.scatterplot(
 st.pyplot(fig)
 
 st.divider()
+
+#ML
+
+#Conclusiones
+st.markdown("## Conclusiones")
 
