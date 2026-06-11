@@ -248,6 +248,39 @@ Las correlaciones con el rating son relativamente bajas, lo que indica que la sa
 """)
 
 st.divider()
+
+#Gráfica 5: Influencia del Publisher
+st.markdown("### Influencia del Publisher")
+
+st.info("""
+Esta gráfica compara la distribución de ratings entre los principales publishers de Steam.
+Cada caja representa cómo se distribuyen las calificaciones de los juegos publicados por una empresa.
+""")
+
+fig, ax = plt.subplots(figsize=(12,8))
+
+sns.boxplot(
+    data=df_top_publishers,
+    x='rating',
+    y='primary_publisher',
+    order=orden_mediana,
+    ax=ax
+)
+
+st.pyplot(fig)
+
+st.success("""
+Hallazgo:
+Algunos publishers presentan consistentemente ratings más altos que otros, lo que sugiere que la reputación del distribuidor podría influir en la percepción de calidad del videojuego.
+""")
+
+st.divider()
+
+#Heatmap Publisher
+st.markdown("### Reputación del Publisher")
+st.info("""
+Se analizó si la reputación histórica de un publisher está relacionada con el desempeño de sus videojuegos.
+""")
 #ML
 
 st.markdown("### Machine Learning: ")
