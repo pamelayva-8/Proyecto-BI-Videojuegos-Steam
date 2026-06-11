@@ -161,54 +161,7 @@ La mayoría de los videojuegos presentan ratings superiores al 70%.
 """)
 st.divider()
 
-#Gráfica 2----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-st.markdown("### Rating vs Peak CCU")
 
-
-fig, ax = plt.subplots(figsize=(8,5))
-
-sns.scatterplot(
-    data=df_filtrado,
-    x='rating',
-    y='peak_ccu',
-    alpha=0.4,
-    ax=ax
-)
-
-ax.set_yscale('log')
-
-st.pyplot(fig)
-
-st.info("""
-Esta gráfica compara la calificación de los videojuegos con el máximo número de usuarios conectados simultáneamente (Peak CCU).
-Cada punto representa un videojuego. Existen videojuegos con ratings altos y bajos independientemente de su popularidad.
-Tener muchos usuarios simultáneos no garantiza una mejor calificación.
-""")
-
-st.divider()
-
-#Gráfica 3----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-st.markdown("### Rating vs Precio")
-
-fig, ax = plt.subplots(figsize=(8,5))
-
-sns.scatterplot(
-    data=df_filtrado,
-    x='rating',
-    y='price',
-    alpha=0.4,
-    ax=ax
-)
-
-st.pyplot(fig)
-
-st.info("""
-Esta gráfica muestra la relación entre el precio de un videojuego y su calificación.
-No se observa una relación clara entre el precio y el rating.
-Los videojuegos económicos pueden obtener calificaciones tan altas como los más costosos.
-""")
-
-st.divider()
 
 #Gráfica 4: Heatmap ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
