@@ -31,6 +31,7 @@ st.divider()
 url = "https://github.com/pamelayva-8/Proyecto-BI-Videojuegos-Steam/raw/refs/heads/main/steam_limpio_2.csv"
 
 
+
 df = pd.read_csv(url)
 
 #Sidebar----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
