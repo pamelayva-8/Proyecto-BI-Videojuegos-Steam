@@ -26,7 +26,7 @@ show_header("Dashboard Videojuegos Steam")
 
 # DATA
 
-url = "https://github.com/pamelayva-8/Proyecto-BI-Videojuegos-Steam/blob/865ad3597646dfa80e52ce948f09acd4f4b22b79/steam_limpio.csv"
+url = "https://github.com/pamelayva-8/Proyecto-BI-Videojuegos-Steam/raw/refs/heads/main/steam_limpio.csv"
 
 df = pd.read_csv(url)
 
