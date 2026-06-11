@@ -26,7 +26,7 @@ show_header("Dashboard Videojuegos Steam")
 
 # DATA
 
-url = "https:///kaggle/input/steam-games-dataset/games.json?"
+url = "steam_limpio.csv"
 
 pagina = requests.get(url).json()
 ligas = pagina['data']['es']['feeds']
