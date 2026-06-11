@@ -244,7 +244,6 @@ ax.set_title('Matriz de Correlación')
 st.pyplot(fig)
 
 st.success("""
-Hallazgo:
 Las correlaciones con el rating son relativamente bajas, lo que indica que la satisfacción de los usuarios depende de múltiples factores y no de una sola variable.
 """)
 
@@ -298,7 +297,6 @@ sns.boxplot(
 st.pyplot(fig)
 
 st.success("""
-Hallazgo:
 Algunos publishers presentan consistentemente ratings más altos que otros, lo que sugiere que la reputación del distribuidor podría influir en la percepción de calidad del videojuego.
 """)
 
