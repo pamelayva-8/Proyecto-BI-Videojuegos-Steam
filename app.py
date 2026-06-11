@@ -552,6 +552,75 @@ with col2:
               help="En promedio, el modelo se equivoca este % al estimar el rating")
  
 st.divider()
+
+
+# ==================================================================================================================================================================================
+# --- SIMULADOR INTERACTIVO ---
+# ==================================================================================================================================================================================
+st.markdown("### 🔮 Simulador de Éxito: Estima tu Rating preliminar")
+st.write("Ingresa los datos del nuevo videojuego para simular cuál sería la respuesta y calificación esperada de la comunidad:")
+
+col_in1, col_in2 = st.columns(2)
+
+with col_in1:
+    st.markdown("##### 💰 Configuración Comercial")
+    input_precio = st.slider("Precio sugerido de lanzamiento (USD)", min_value=0.0, max_value=100.0, value=19.99, step=0.99)
+    input_peak = st.number_input("Pico estimado de usuarios simultáneos (Peak CCU)", min_value=0, max_value=1000000, value=500, step=100)
+
+with col_in2:
+    st.markdown("##### 📦 Características de Producto")
+    input_idiomas = st.slider("Idiomas con soporte completo", min_value=1, max_value=30, value=5, step=1)
+    
+    pub_seleccionado = st.radio(
+        "Estrategia de Publicación / Respaldo comercial",
+        ["Autopublicado / Indie Puro", "Publisher Mediano o Especializado", "Gran Empresa Corporativa (AAA)"]
+    )
+    
+    # Convertimos la opción de texto a los números que el Random Forest espera (0, 1 o 2)
+    dict_pub = {
+        "Autopublicado / Indie Puro": 0,
+        "Publisher Mediano o Especializado": 1,
+        "Gran Empresa Corporativa (AAA)": 2
+    }
+    input_publisher = dict_pub[pub_seleccionado]
+
+st.write("") # Espaciador visual
+
+# Botón detonador de la predicción
+if st.button("🚀 Calcular Score Preliminar"):
+    
+    # Creamos un DataFrame instantáneo con una sola fila respetando los nombres de columna exactos del entrenamiento
+    datos_nuevos = pd.DataFrame(
+        [[input_precio, input_peak, input_idiomas, input_publisher]], 
+        columns=['price', 'peak_ccu', 'total_languages', 'tipo_publisher']
+    )
+    
+    # Realizar predicción matemática
+    prediccion = modelo.predict(datos_nuevos)[0]
+    
+    st.success("¡Simulación completada con éxito!")
+    
+    # Desplegar resultado en formato KPI de BI
+    st.metric(
+        label="⭐ Rating de Aprobación Estimado", 
+        value=f"{prediccion:.2f} %",
+        delta=f"{prediccion - 70:.2f} % respecto a la media de la industria (70%)"
+    )
+    
+    # Conclusiones ejecutivas dinámicas basadas en el score predicho
+    if prediccion >= 80:
+        st.balloons()
+        st.markdown("🎯 **Insight estratégico de BI:** Excelente balance. La combinación de accesibilidad en precio junto con una localización robusta de idiomas garantiza una alta retención y satisfacción del cliente.")
+    elif prediccion >= 70:
+        st.markdown("⚠️ **Insight estratégico de BI:** El título se sitúa en la media competitiva de Steam. Podrías empujar la nota hacia arriba incrementando el número de idiomas o haciendo pequeños ajustes promocionales al costo de entrada.")
+    else:
+        st.markdown("🚨 **Insight estratégico de BI:** Alerta de riesgo comercial. Una baja traducción o un precio excesivo sin la tracción suficiente de comunidad puede provocar un volumen alto de reseñas negativas.")
+
+st.divider()
+
+
+
+
  
 # Importancia de variables
 st.markdown("#### ¿Qué características influyen más en el rating?")
