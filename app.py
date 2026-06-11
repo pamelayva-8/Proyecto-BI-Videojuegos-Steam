@@ -27,6 +27,7 @@ show_header("Dashboard Videojuegos Steam")
 url = "https://github.com/pamelayva-8/Proyecto-BI-Videojuegos-Steam/raw/refs/heads/main/steam_limpio.csv"
 
 df = pd.read_csv(url)
+st.write(df.head())
 
 # CONTENT
 
