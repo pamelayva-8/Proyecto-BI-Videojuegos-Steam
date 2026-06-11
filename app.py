@@ -28,26 +28,19 @@ show_header("Dashboard Videojuegos Steam")
 
 url = "https://github.com/pamelayva-8/Proyecto-BI-Videojuegos-Steam/blob/865ad3597646dfa80e52ce948f09acd4f4b22b79/steam_limpio.csv"
 
-pagina = requests.get(url).json()
-ligas = pagina['data']['es']['feeds']
-
-liga = [liga for liga in ligas if liga['name'] == 'station_information'][0]
-
-df = pd.DataFrame(
-    requests.get(liga['url']).json()['data']['stations']
-)
+df = pd.read_csv(url)
 
 # CONTENT
 
-st.markdown("## 🚲 Ecobici Stations in Mexico City")
+st.markdown("##  Videojuegos steam")
 
 col1, col2 = st.columns(2)
 
 with col1:
-    st.metric("Total Stations", len(df))
+    st.metric("Videojuegos totales", len(df))
 
 with col2:
-    st.metric("Average Capacity", round(df['capacity'].mean(), 2))
+    st.metric("Publisher", round(df['Publisher'].mean(), 2))
 
 st.dataframe(df[['name', 'lat', 'lon', 'capacity']].head(10))
 # MAP
