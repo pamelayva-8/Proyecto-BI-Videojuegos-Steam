@@ -555,66 +555,93 @@ st.divider()
 
 
 # ==================================================================================================================================================================================
-# --- SIMULADOR INTERACTIVO ---
+# --- SIMULADOR INTERACTIVO (PREDICCIÓN EN VIVO) ---
 # ==================================================================================================================================================================================
 st.markdown("### 🔮 Simulador de Éxito: Estima tu Rating preliminar")
-st.write("Ingresa los datos del nuevo videojuego para simular cuál sería la respuesta y calificación esperada de la comunidad:")
+st.write("Configura las características de tu nuevo proyecto de videojuego para calcular la estimación del Rating esperado en Steam:")
 
-col_in1, col_in2 = st.columns(2)
+# Creamos dos columnas estéticas para los inputs numéricos y de control
+col_sim1, col_sim2 = st.columns(2)
 
-with col_in1:
-    st.markdown("##### 💰 Configuración Comercial")
-    input_precio = st.slider("Precio sugerido de lanzamiento (USD)", min_value=0.0, max_value=100.0, value=19.99, step=0.99)
-    input_peak = st.number_input("Pico estimado de usuarios simultáneos (Peak CCU)", min_value=0, max_value=1000000, value=500, step=100)
+with col_sim1:
+    st.markdown("##### 💰 Métricas Comerciales y de Mercado")
+    input_precio = st.slider("Precio sugerido de lanzamiento (USD)", min_value=0.0, max_value=120.0, value=19.99, step=0.99)
+    input_peak = st.number_input("Pico esperado de jugadores simultáneos (Peak CCU)", min_value=0, max_value=1000000, value=1200, step=100)
+    input_owners = st.number_input("Estimación base de propietarios (Owners)", min_value=0, max_value=50000000, value=50000, step=10000)
+    input_dlc = st.slider("Cantidad de contenidos descargables (DLCs)", min_value=0, max_value=30, value=0, step=1)
 
-with col_in2:
-    st.markdown("##### 📦 Características de Producto")
-    input_idiomas = st.slider("Idiomas con soporte completo", min_value=1, max_value=30, value=5, step=1)
-    
-    pub_seleccionado = st.radio(
-        "Estrategia de Publicación / Respaldo comercial",
-        ["Autopublicado / Indie Puro", "Publisher Mediano o Especializado", "Gran Empresa Corporativa (AAA)"]
-    )
-    
-    # Convertimos la opción de texto a los números que el Random Forest espera (0, 1 o 2)
-    dict_pub = {
-        "Autopublicado / Indie Puro": 0,
-        "Publisher Mediano o Especializado": 1,
-        "Gran Empresa Corporativa (AAA)": 2
-    }
-    input_publisher = dict_pub[pub_seleccionado]
+with col_sim2:
+    st.markdown("##### ⚙️ Localización y Atributos Técnicos")
+    input_idiomas = st.slider("Número de idiomas con soporte completo", min_value=1, max_value=35, value=5, step=1)
+    input_achievements = st.number_input("Cantidad de logros integrados (Achievements)", min_value=0, max_value=2000, value=40, step=10)
+    input_os = st.slider("Sistemas operativos compatibles (Windows / Mac / Linux)", min_value=1, max_value=3, value=1, step=1, 
+                         help="1 = Solo Windows, 2 = Dos plataformas, 3 = Multiplataforma completo")
+    input_pub = st.slider("Índice de jerarquía del Publisher (Estrategia comercial)", min_value=0, max_value=5, value=1, step=1,
+                         help="0-1 = Indie/Autopublicado, 2-3 = Distribuidor mediano, 4-5 = Gran Empresa AAA")
+
+# Agregamos un multiselect dinámico para controlar los géneros de forma sumamente intuitiva
+st.markdown("##### 🎭 Clasificación por Géneros")
+lista_generos_disponibles = [
+    'Indie', 'Adventure', 'Action', 'Casual', 'Simulation', 
+    'Strategy', 'RPG', 'Early Access', 'Free To Play', 'Sports'
+]
+generos_seleccionados = st.multiselect(
+    "Selecciona todos los géneros que describan a tu videojuego:",
+    options=lista_generos_disponibles,
+    default=['Indie', 'Action']
+)
 
 st.write("") # Espaciador visual
 
-# Botón detonador de la predicción
-if st.button("🚀 Calcular Score Preliminar"):
+# Botón detonador del modelo predictivo
+if st.button("🚀 Calcular Calificación Estimada"):
     
-    # Creamos un DataFrame instantáneo con una sola fila respetando los nombres de columna exactos del entrenamiento
-    datos_nuevos = pd.DataFrame(
-        [[input_precio, input_peak, input_idiomas, input_publisher]], 
-        columns=['price', 'peak_ccu', 'total_languages', 'tipo_publisher']
-    )
+    # 1. Construimos un diccionario base con los inputs mapeados a sus nombres de variables correspondientes
+    valores_usuario = {
+        'price': input_precio,
+        'peak_ccu_log': np.log1p(input_peak),  # Aplicamos la transformación logarítmica exacta que requiere el modelo
+        'total_languages': input_idiomas,
+        'tipo_publisher': input_pub,
+        'owners_numeric': input_owners,
+        'achievements': input_achievements,
+        'dlc_count': input_dlc,
+        'os_score': input_os
+    }
     
-    # Realizar predicción matemática
+    # 2. Mapeamos las banderas binarias (0 o 1) para cada uno de los géneros del modelo
+    for genero in lista_generos_disponibles:
+        nombre_columna = f'genre_{genero}'
+        valores_usuario[nombre_columna] = 1 if genero in generos_seleccionados else 0
+        
+    # 3. EL TRUCO MAGISTRAL: Filtramos y ordenamos la fila de datos usando EXACTAMENTE el orden de 'cols_disponibles'
+    # Si alguna variable de la lista general no llegó a quedar en el modelo final, .get(col, 0) la previene de fallar.
+    datos_estructurados = {col: valores_usuario.get(col, 0) for col in cols_disponibles}
+    
+    # 4. Convertimos a DataFrame asegurando un calce matemático perfecto de dimensiones y nombres
+    datos_nuevos = pd.DataFrame([datos_estructurados], columns=cols_disponibles)
+    
+    # 5. Ejecutar la predicción
     prediccion = modelo.predict(datos_nuevos)[0]
     
+    # Mostrar resultados en formato KPI corporativo de BI
     st.success("¡Simulación completada con éxito!")
     
-    # Desplegar resultado en formato KPI de BI
-    st.metric(
-        label="⭐ Rating de Aprobación Estimado", 
-        value=f"{prediccion:.2f} %",
-        delta=f"{prediccion - 70:.2f} % respecto a la media de la industria (70%)"
-    )
-    
-    # Conclusiones ejecutivas dinámicas basadas en el score predicho
-    if prediccion >= 80:
-        st.balloons()
-        st.markdown("🎯 **Insight estratégico de BI:** Excelente balance. La combinación de accesibilidad en precio junto con una localización robusta de idiomas garantiza una alta retención y satisfacción del cliente.")
-    elif prediccion >= 70:
-        st.markdown("⚠️ **Insight estratégico de BI:** El título se sitúa en la media competitiva de Steam. Podrías empujar la nota hacia arriba incrementando el número de idiomas o haciendo pequeños ajustes promocionales al costo de entrada.")
-    else:
-        st.markdown("🚨 **Insight estratégico de BI:** Alerta de riesgo comercial. Una baja traducción o un precio excesivo sin la tracción suficiente de comunidad puede provocar un volumen alto de reseñas negativas.")
+    col_res1, col_res2 = st.columns([2, 3])
+    with col_res1:
+        st.metric(
+            label="⭐ Rating Estimado", 
+            value=f"{prediccion:.2f} %",
+            delta=f"{prediccion - 70:.2f} % vs Media de Steam (70%)"
+        )
+    with col_res2:
+        # Generar un insight de negocio según el porcentaje obtenido
+        if prediccion >= 82:
+            st.balloons()
+            st.markdown("🏅 **Insight de BI:** ¡Éxito potencial! El modelo detecta una combinación altamente competitiva. La estructura de precio y el balance de soporte al usuario predicen una recepción excelente (*Very Positive*).")
+        elif prediccion >= 70:
+            st.markdown("📈 **Insight de BI:** El título se mantendrá en el promedio saludable del mercado. Para escalar el rating, considera optimizar la localización (añadir más idiomas) o expandir el plan de logros.")
+        else:
+            st.markdown("⚠️ **Insight de BI:** Riesgo comercial moderado. Una baja tasa de retención o un precio desbalanceado para el nicho de mercado seleccionado podría empujar la calificación a terreno mixto.")
 
 st.divider()
 
