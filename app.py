@@ -247,7 +247,10 @@ Hallazgo:
 Las correlaciones con el rating son relativamente bajas, lo que indica que la satisfacción de los usuarios depende de múltiples factores y no de una sola variable.
 """)
 
+st.divider()
 #ML
+
+st.markdown("### Machine Learning: ")
 st.info("""
 Se utilizó un modelo Random Forest para identificar qué variables tienen mayor influencia sobre la calificación positiva de un videojuego.
 """)
