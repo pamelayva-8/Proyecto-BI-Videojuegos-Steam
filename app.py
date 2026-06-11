@@ -540,40 +540,50 @@ st.info("""
 Se  utilizó un modelo Random Forest Regressor para identificar qué características del videojuego tienen mayor influencia sobre su calificación positiva. Se ajustaron los hiperparámetros del modelo
 (n_estimators=500, max_depth=20, min_samples_split=5) para mejorar su desempeño.
 """)
-  
+
 @st.cache_resource
-def cargar_modelo():
-    return joblib.load("modelo_steam_rf.pkl")
+def entrenar_modelo(url):
+    df_model = pd.read_csv(url)
  
-modelo = cargar_modelo()
+    if 'peak_ccu_log' not in df_model.columns:
+        df_model['peak_ccu_log'] = np.log1p(df_model['peak_ccu'])
  
-# Preparar variables igual que en el notebook
-variables_modelo = [
-    'price', 'peak_ccu_log', 'total_languages', 'tipo_publisher',
-    'owners_numeric', 'achievements', 'dlc_count', 'os_score',
-    'genre_Indie', 'genre_Adventure', 'genre_Action', 'genre_Casual',
-    'genre_Simulation', 'genre_Strategy', 'genre_RPG',
-    'genre_Early Access', 'genre_Free To Play', 'genre_Sports'
-]
+    if 'os_score' not in df_model.columns:
+        df_model['os_score'] = df_model[['windows', 'mac', 'linux']].sum(axis=1)
  
-# Calcular peak_ccu_log y os_score si no existen
-if 'peak_ccu_log' not in df.columns:
-    df['peak_ccu_log'] = np.log1p(df['peak_ccu'])
+    variables_modelo = [
+        'price', 'peak_ccu_log', 'total_languages', 'tipo_publisher',
+        'owners_numeric', 'achievements', 'dlc_count', 'os_score',
+        'genre_Indie', 'genre_Adventure', 'genre_Action', 'genre_Casual',
+        'genre_Simulation', 'genre_Strategy', 'genre_RPG',
+        'genre_Early Access', 'genre_Free To Play', 'genre_Sports'
+    ]
  
-if 'os_score' not in df.columns:
-    df['os_score'] = df[['windows', 'mac', 'linux']].sum(axis=1)
+    cols = [c for c in variables_modelo if c in df_model.columns]
+    df_ml = df_model[cols + ['rating']].dropna()
  
-cols_disponibles = [c for c in variables_modelo if c in df.columns]
-df_ml = df[cols_disponibles + ['rating']].dropna()
+    X = df_ml[cols]
+    y = df_ml['rating']
  
-X = df_ml[cols_disponibles]
-y = df_ml['rating']
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
  
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-y_pred = modelo.predict(X_test)
+    modelo = RandomForestRegressor(
+        n_estimators=500,
+        max_depth=20,
+        min_samples_split=5,
+        min_samples_leaf=2,
+        max_features='sqrt',
+        random_state=42,
+        n_jobs=-1
+    )
+    modelo.fit(X_train, y_train)
  
-r2  = r2_score(y_test, y_pred)
-mae = mean_absolute_error(y_test, y_pred)
+    y_pred = modelo.predict(X_test)
+ 
+    return modelo, cols, r2_score(y_test, y_pred), mean_absolute_error(y_test, y_pred)
+ 
+with st.spinner("Cargando modelo... esto solo tarda la primera vez ⏳"):
+    modelo, cols_disponibles, r2, mae = entrenar_modelo(url)
  
 # Métricas
 col1, col2 = st.columns(2)
@@ -627,6 +637,7 @@ Las variables con mayor peso explican por qué un juego tiene buena calificació
 Características como logros, idiomas soportados y tipo de publisher son factores
 que un desarrollador puede considerar antes del lanzamiento.
 """)
+ 
  
 st.warning("""
 Variables como el pico de jugadores simultáneos y el estimado de
