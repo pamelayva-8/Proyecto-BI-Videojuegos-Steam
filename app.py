@@ -303,7 +303,7 @@ Algunos publishers presentan consistentemente ratings más altos que otros, lo q
 
 st.divider()
 
-#Heatmap Publisher
+#Gráfica 6: Heatmap Publisher ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 st.markdown("### Reputación del Publisher")
 st.info("""
 Se analizó si la reputación histórica de un publisher está relacionada con el desempeño de sus videojuegos.
@@ -361,6 +361,106 @@ La variable publisher_median_rating representa la reputación histórica del pub
 Si presenta correlaciones positivas con el rating, podría indicar que algunos distribuidores tienden a publicar juegos mejor valorados por los usuarios.
 """)
 
+st.divider()
+
+#Gráfica 7: Idioma ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+st.markdown("### Estrategia de Localización (idioma)")
+
+# Contar idiomas
+def contar_idiomas(x):
+    if pd.isna(x):
+        return 0
+
+    if isinstance(x, str):
+        return len([
+            idioma.strip()
+            for idioma in x.split(',')
+            if idioma.strip()
+        ])
+
+    return 0
+
+df_filtrado['total_languages'] = (
+    df_filtrado['supported_languages']
+    .apply(contar_idiomas)
+)
+
+# Segmentación
+def segmentar(total):
+
+    if total == 1:
+        return '1 idioma'
+
+    elif total <= 5:
+        return '2-5 idiomas'
+
+    elif total <= 10:
+        return '6-10 idiomas'
+
+    else:
+        return '+10 idiomas'
+
+df_filtrado['estrategia_idiomas'] = (
+    df_filtrado['total_languages']
+    .apply(segmentar)
+)
+
+idiomas_counts = (
+    df_filtrado['estrategia_idiomas']
+    .value_counts()
+)
+
+fig, ax = plt.subplots(figsize=(8,5))
+
+sns.barplot(
+    x=idiomas_counts.index,
+    y=idiomas_counts.values,
+    ax=ax
+)
+
+ax.set_title("Estrategia de Localización")
+ax.set_ylabel("Cantidad de Juegos")
+
+st.pyplot(fig)
+
+st.info("""
+Los videojuegos multilingües son frecuentes en Steam.
+Ofrecer soporte para varios idiomas puede aumentar el alcance potencial de un videojuego.
+""")
+
+st.divider()
+
+#Gráfica 8: Sistema operativo
+
+
+st.markdown("### Videojuegos por Sistema Operativo")
+
+so_counts = pd.Series({
+    'Windows': df_filtrado['windows'].sum(),
+    'Mac': df_filtrado['mac'].sum(),
+    'Linux': df_filtrado['linux'].sum()
+})
+
+fig, ax = plt.subplots(figsize=(8,5))
+
+sns.barplot(
+    x=so_counts.index,
+    y=so_counts.values,
+    ax=ax
+)
+
+ax.set_title('Videojuegos por Sistema Operativo')
+ax.set_xlabel('Sistema Operativo')
+ax.set_ylabel('Cantidad de Juegos')
+
+st.pyplot(fig)
+
+st.info("""
+Windows es el sistema operativo dominante en Steam.
+La mayoría de los videojuegos ofrecen compatibilidad con Windows, mientras que Mac y Linux tienen una presencia considerablemente menor.
+""")
 st.divider()
 #ML ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
