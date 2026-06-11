@@ -46,8 +46,6 @@ df_filtrado = df[
     df['rating'] >= rating_min
 ]
 
-
-
 #Sidebar índice
 st.sidebar.markdown("## Navegación")
 
