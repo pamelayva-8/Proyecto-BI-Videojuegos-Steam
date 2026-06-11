@@ -46,19 +46,6 @@ df_filtrado = df[
     df['rating'] >= rating_min
 ]
 
-#Sidebar índice
-st.sidebar.markdown("## Navegación")
-
-pagina = st.sidebar.radio(
-    "Ir a:",
-    [
-        "Inicio",
-        "Estadísticas",
-        "Visualizaciones",
-        "Machine Learning",
-        "Conclusiones"
-    ]
-)
 
 # CONTENT
 
