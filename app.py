@@ -32,6 +32,19 @@ url = "https://github.com/pamelayva-8/Proyecto-BI-Videojuegos-Steam/raw/refs/hea
 
 df = pd.read_csv(url)
 
+#Sidebar
+st.sidebar.header("Filtros")
+
+rating_min = st.sidebar.slider(
+    "Rating mínimo",
+    0,
+    100,
+    0
+)
+
+df_filtrado = df[
+    df['rating'] >= rating_min
+]
 
 # CONTENT
 
@@ -142,16 +155,3 @@ st.pyplot(fig)
 
 st.divider()
 
-#Sidebar
-st.sidebar.header("Filtros")
-
-rating_min = st.sidebar.slider(
-    "Rating mínimo",
-    0,
-    100,
-    0
-)
-
-df_filtrado = df[
-    df['rating'] >= rating_min
-]
