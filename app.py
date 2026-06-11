@@ -17,15 +17,16 @@ def show_header(text_title: str):
 
     with col2:
         st.title(text_title)
-        st.caption("📘 Developed for: Business Intelligence")
+        st.caption("Pamela Yadira Vega Agraz")
+        st.caption("Patricio Cárdenas Torres")
         st.caption("Universidad Panamericana")
 
 
-show_header("Dashboard Ecobici CDMX")
+show_header("Dashboard Videojuegos Steam")
 
 # DATA
 
-url = "https://gbfs.mex.lyftbikes.com/gbfs/gbfs.json"
+url = "fronkongames/steam-games-dataset"
 
 pagina = requests.get(url).json()
 ligas = pagina['data']['es']['feeds']
