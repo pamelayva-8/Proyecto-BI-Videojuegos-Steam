@@ -64,7 +64,7 @@ st.markdown("""
 """)
 
 #Estadísticas descriptivas
-t.markdown("### Estadísticas descriptivas")
+st.markdown("### Estadísticas descriptivas")
 
 st.dataframe(
     df[
