@@ -261,7 +261,7 @@ Cada caja representa cómo se distribuyen las calificaciones de los juegos publi
 fig, ax = plt.subplots(figsize=(12,8))
 
 sns.boxplot(
-    data=df_top_publishers,
+    data=df_filtrado,
     x='rating',
     y='primary_publisher',
     order=orden_mediana,
