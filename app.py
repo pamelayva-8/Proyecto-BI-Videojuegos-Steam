@@ -112,7 +112,7 @@ st.markdown("### Rating vs Peak CCU")
 fig, ax = plt.subplots(figsize=(8,5))
 
 sns.scatterplot(
-    data=df,
+    data=df_filtrado,
     x='rating',
     y='peak_ccu',
     alpha=0.4,
@@ -131,7 +131,7 @@ st.markdown("### Rating vs Precio")
 fig, ax = plt.subplots(figsize=(8,5))
 
 sns.scatterplot(
-    data=df,
+    data=df_filtrado,
     x='rating',
     y='price',
     alpha=0.4,
