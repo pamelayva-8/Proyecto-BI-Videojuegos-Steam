@@ -543,6 +543,11 @@ Se  utilizó un modelo Random Forest Regressor para identificar qué caracterís
 
 @st.cache_resource
 def entrenar_modelo(url):
+    from sklearn.ensemble import RandomForestRegressor
+    from sklearn.metrics import r2_score, mean_absolute_error
+    from sklearn.model_selection import train_test_split
+    import numpy as np
+    
     df_model = pd.read_csv(url)
  
     if 'peak_ccu_log' not in df_model.columns:
