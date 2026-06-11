@@ -34,29 +34,4 @@ df = pd.read_csv(url)
 
 st.markdown("##  Videojuegos steam")
 
-col1, col2 = st.columns(2)
 
-with col1:
-    st.metric("Videojuegos totales", len(df))
-
-with col2:
-    st.metric("Publisher", round(df['Publisher'].mean(), 2))
-
-st.dataframe(df[['name', 'lat', 'lon', 'capacity']].head(10))
-# MAP
-
-centroide_lat = df['lat'].mean()
-centroide_lon = df['lon'].mean()
-
-mapa = folium.Map(
-    location=[centroide_lat, centroide_lon],
-    zoom_start=12
-)
-
-for i in range(len(df)):
-    folium.Marker(
-        location=[df['lat'][i], df['lon'][i]],
-        popup=df['name'][i]
-    ).add_to(mapa)
-
-st_folium(mapa, width=700, height=500)
