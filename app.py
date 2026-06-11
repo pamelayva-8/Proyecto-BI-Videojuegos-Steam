@@ -24,16 +24,20 @@ def show_header(text_title: str):
 
 show_header("Dashboard Videojuegos Steam")
 
+st.divider()
+
 # DATA
 
 url = "https://github.com/pamelayva-8/Proyecto-BI-Videojuegos-Steam/raw/refs/heads/main/steam_limpio.csv"
 
 df = pd.read_csv(url)
-st.write(df.head())
+
 
 # CONTENT
 
 st.markdown("##  Videojuegos steam")
+
+st.divider()
 
 #Métricas
 col1, col2, col3 = st.columns(3)
@@ -55,6 +59,7 @@ with col3:
         "Precio promedio",
         round(df['price'].mean(), 2)
     )
+st.divider()
 
 #Pregunta
 st.markdown("""
@@ -63,6 +68,13 @@ st.markdown("""
 ¿Qué características influyen en que un videojuego tenga una calificación positiva?
 """)
 
+st.markdown("""
+Este proyecto analiza más de 56 mil videojuegos de Steam para identificar
+qué características pueden influir en que un videojuego reciba una
+calificación positiva por parte de los usuarios.
+""")
+
+st.divider()
 #Estadísticas descriptivas
 st.markdown("### Estadísticas descriptivas")
 
@@ -74,9 +86,9 @@ st.dataframe(
             'peak_ccu',
             'owners_numeric'
         ]
-    ].describe()
+    ].describe().round(2)
 )
-
+st.divider()
 #Gráfica 1
 st.markdown("### Distribución del Rating")
 
@@ -92,3 +104,54 @@ sns.histplot(
 ax.set_title("Distribución del Rating")
 
 st.pyplot(fig)
+st.divider()
+
+#Gráfica 2
+st.markdown("### Rating vs Peak CCU")
+
+fig, ax = plt.subplots(figsize=(8,5))
+
+sns.scatterplot(
+    data=df,
+    x='rating',
+    y='peak_ccu',
+    alpha=0.4,
+    ax=ax
+)
+
+ax.set_yscale('log')
+
+st.pyplot(fig)
+
+st.divider()
+
+#Gráfica 3
+st.markdown("### Rating vs Precio")
+
+fig, ax = plt.subplots(figsize=(8,5))
+
+sns.scatterplot(
+    data=df,
+    x='rating',
+    y='price',
+    alpha=0.4,
+    ax=ax
+)
+
+st.pyplot(fig)
+
+st.divider()
+
+#Sidebar
+st.sidebar.header("Filtros")
+
+rating_min = st.sidebar.slider(
+    "Rating mínimo",
+    0,
+    100,
+    0
+)
+
+df_filtrado = df[
+    df['rating'] >= rating_min
+]
