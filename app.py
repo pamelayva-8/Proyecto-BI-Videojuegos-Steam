@@ -432,36 +432,42 @@ Ofrecer soporte para varios idiomas puede aumentar el alcance potencial de un vi
 
 st.divider()
 
-#Gráfica 8: Sistema operativo
+#Gráfica 8: Sistema operativo ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+st.markdown("### Rating Promedio por Sistema Operativo")
 
-st.markdown("### Videojuegos por Sistema Operativo")
-
-so_counts = pd.Series({
-    'Windows': df_filtrado['windows'].sum(),
-    'Mac': df_filtrado['mac'].sum(),
-    'Linux': df_filtrado['linux'].sum()
+so_data = pd.DataFrame({
+    'Sistema Operativo': [
+        'Windows',
+        'Mac',
+        'Linux'
+    ],
+    'Rating Promedio': [
+        df_filtrado[df_filtrado['windows']==True]['rating'].mean(),
+        df_filtrado[df_filtrado['mac']==True]['rating'].mean(),
+        df_filtrado[df_filtrado['linux']==True]['rating'].mean()
+    ]
 })
 
 fig, ax = plt.subplots(figsize=(8,5))
 
 sns.barplot(
-    x=so_counts.index,
-    y=so_counts.values,
+    data=so_data,
+    x='Sistema Operativo',
+    y='Rating Promedio',
     ax=ax
 )
 
-ax.set_title('Videojuegos por Sistema Operativo')
-ax.set_xlabel('Sistema Operativo')
-ax.set_ylabel('Cantidad de Juegos')
+ax.set_ylim(0,100)
 
 st.pyplot(fig)
 
 st.info("""
-Windows es el sistema operativo dominante en Steam.
-La mayoría de los videojuegos ofrecen compatibilidad con Windows, mientras que Mac y Linux tienen una presencia considerablemente menor.
+Esta gráfica compara el rating promedio de los videojuegos según los sistemas operativos que soportan.
+Permite observar si existe alguna diferencia en la percepción de calidad entre plataformas.
 """)
 st.divider()
+
 #ML ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 st.markdown("### Machine Learning: ")
