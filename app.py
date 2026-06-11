@@ -541,54 +541,53 @@ Se  utilizó un modelo Random Forest Regressor para identificar qué caracterís
 (n_estimators=500, max_depth=20, min_samples_split=5) para mejorar su desempeño.
 """)
 
+
 @st.cache_resource
-def entrenar_modelo(url):
-    from sklearn.ensemble import RandomForestRegressor
-    from sklearn.metrics import r2_score, mean_absolute_error
-    from sklearn.model_selection import train_test_split
-    import numpy as np
-    
-    df_model = pd.read_csv(url)
- 
-    if 'peak_ccu_log' not in df_model.columns:
-        df_model['peak_ccu_log'] = np.log1p(df_model['peak_ccu'])
- 
-    if 'os_score' not in df_model.columns:
-        df_model['os_score'] = df_model[['windows', 'mac', 'linux']].sum(axis=1)
- 
-    variables_modelo = [
-        'price', 'peak_ccu_log', 'total_languages', 'tipo_publisher',
-        'owners_numeric', 'achievements', 'dlc_count', 'os_score',
-        'genre_Indie', 'genre_Adventure', 'genre_Action', 'genre_Casual',
-        'genre_Simulation', 'genre_Strategy', 'genre_RPG',
-        'genre_Early Access', 'genre_Free To Play', 'genre_Sports'
-    ]
- 
-    cols = [c for c in variables_modelo if c in df_model.columns]
-    df_ml = df_model[cols + ['rating']].dropna()
- 
-    X = df_ml[cols]
-    y = df_ml['rating']
- 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
- 
-    modelo = RandomForestRegressor(
-        n_estimators=500,
-        max_depth=20,
-        min_samples_split=5,
-        min_samples_leaf=2,
-        max_features='sqrt',
-        random_state=42,
-        n_jobs=-1
-    )
-    modelo.fit(X_train, y_train)
- 
-    y_pred = modelo.predict(X_test)
- 
-    return modelo, cols, r2_score(y_test, y_pred), mean_absolute_error(y_test, y_pred)
+def cargar_modelo():
+    import gdown
+    import joblib
+    import os
+    ruta = "modelo_steam_rf.pkl"
+    if not os.path.exists(ruta):
+        gdown.download(
+            "https://drive.google.com/uc?id=1EGpHQ_KkMyPqEVXxCUeVESI5oU3DoicI",
+            ruta,
+            quiet=True
+        )
+    return joblib.load(ruta)
  
 with st.spinner("Cargando modelo... esto solo tarda la primera vez ⏳"):
-    modelo, cols_disponibles, r2, mae = entrenar_modelo(url)
+    modelo = cargar_modelo()
+ 
+# Preparar variables
+variables_modelo = [
+    'price', 'peak_ccu_log', 'total_languages', 'tipo_publisher',
+    'owners_numeric', 'achievements', 'dlc_count', 'os_score',
+    'genre_Indie', 'genre_Adventure', 'genre_Action', 'genre_Casual',
+    'genre_Simulation', 'genre_Strategy', 'genre_RPG',
+    'genre_Early Access', 'genre_Free To Play', 'genre_Sports'
+]
+ 
+if 'peak_ccu_log' not in df.columns:
+    df['peak_ccu_log'] = np.log1p(df['peak_ccu'])
+ 
+if 'os_score' not in df.columns:
+    df['os_score'] = df[['windows', 'mac', 'linux']].sum(axis=1)
+ 
+cols_disponibles = [c for c in variables_modelo if c in df.columns]
+df_ml = df[cols_disponibles + ['rating']].dropna()
+ 
+X = df_ml[cols_disponibles]
+y = df_ml['rating']
+ 
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score, mean_absolute_error
+ 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+y_pred = modelo.predict(X_test)
+ 
+r2  = r2_score(y_test, y_pred)
+mae = mean_absolute_error(y_test, y_pred)
  
 # Métricas
 col1, col2 = st.columns(2)
@@ -598,8 +597,8 @@ with col1:
 with col2:
     st.metric("Error promedio (MAE)", f"± {round(mae, 2)}%",
               help="En promedio, el modelo se equivoca este % al estimar el rating")
-
-
+ 
+st.divider()
  
 # Importancia de variables
 st.markdown("#### ¿Qué características influyen más en el rating?")
@@ -643,6 +642,7 @@ Características como logros, idiomas soportados y tipo de publisher son factore
 que un desarrollador puede considerar antes del lanzamiento.
 """)
  
+
  
 st.warning("""
 Variables como el pico de jugadores simultáneos y el estimado de
