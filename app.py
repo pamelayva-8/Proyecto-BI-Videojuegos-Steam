@@ -206,24 +206,11 @@ st.divider()
 
 #Gráfica 4: Heatmap
 
-st.info("""
-La matriz de correlación permite identificar qué tan relacionadas están las variables numéricas entre sí.
-Los valores cercanos a 1 indican una relación fuerte positiva.
-""")
-st.success("""
-Hallazgo:
-Las correlaciones con el rating son relativamente bajas, lo que indica que la satisfacción de los usuarios depende de múltiples factores y no de una sola variable.
-""")
-
-#ML
-st.info("""
-Se utilizó un modelo Random Forest para identificar qué variables tienen mayor influencia sobre la calificación positiva de un videojuego.
-""")
 st.markdown("### Matriz de Correlación")
 
 st.info("""
 La matriz de correlación permite identificar qué tan relacionadas están las variables numéricas entre sí.
-Los valores cercanos a 1 indican una relación positiva fuerte, mientras que los cercanos a 0 indican poca relación.
+Los valores cercanos a 1 indican una relación fuerte positiva.
 """)
 
 # Variables numéricas
@@ -253,10 +240,15 @@ sns.heatmap(
 
 ax.set_title('Matriz de Correlación')
 
-st.pyplot(fig)
+
 st.success("""
 Hallazgo:
-Las variables con mayor importancia según el modelo fueron aquellas relacionadas con la interacción de los usuarios y el uso del videojuego.
+Las correlaciones con el rating son relativamente bajas, lo que indica que la satisfacción de los usuarios depende de múltiples factores y no de una sola variable.
+""")
+
+#ML
+st.info("""
+Se utilizó un modelo Random Forest para identificar qué variables tienen mayor influencia sobre la calificación positiva de un videojuego.
 """)
 
 st.divider()
