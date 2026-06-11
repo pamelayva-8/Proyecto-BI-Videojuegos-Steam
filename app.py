@@ -240,6 +240,7 @@ sns.heatmap(
 
 ax.set_title('Matriz de Correlación')
 
+st.pyplot(fig)
 
 st.success("""
 Hallazgo:
