@@ -470,6 +470,65 @@ Permite observar si existe alguna diferencia en la percepción de calidad entre 
 """)
 st.divider()
 
+#Gráfica 9: Género ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+st.markdown("### Rating Promedio por Género")
+
+from collections import defaultdict
+
+genre_ratings = defaultdict(list)
+
+for _, row in df_filtrado.iterrows():
+
+    if pd.notna(row['genres']):
+
+        generos = (
+            str(row['genres'])
+            .replace("[","")
+            .replace("]","")
+            .replace("'","")
+            .split(",")
+        )
+
+        for genero in generos:
+            genre_ratings[genero.strip()].append(row['rating'])
+
+# Promedio por género
+genre_avg = {
+    genero: sum(ratings)/len(ratings)
+    for genero, ratings in genre_ratings.items()
+    if len(ratings) > 50
+}
+
+genre_avg = (
+    pd.DataFrame(
+        genre_avg.items(),
+        columns=['Genero','Rating']
+    )
+    .sort_values('Rating', ascending=False)
+    .head(10)
+)
+
+fig, ax = plt.subplots(figsize=(10,6))
+
+sns.barplot(
+    data=genre_avg,
+    x='Rating',
+    y='Genero',
+    ax=ax
+)
+
+ax.set_title("Top Géneros por Rating Promedio")
+
+st.pyplot(fig)
+
+st.info("""
+Esta gráfica muestra el rating promedio de los géneros más relevantes de Steam.
+Permite identificar qué tipos de videojuegos suelen recibir mejores calificaciones por parte de los usuarios.
+""")
+
+st.divider()
 #ML ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 st.markdown("### Machine Learning: ")
