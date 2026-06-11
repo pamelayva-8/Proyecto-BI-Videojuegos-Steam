@@ -26,14 +26,14 @@ show_header("Dashboard Videojuegos Steam")
 
 st.divider()
 
-# DATA
+# DATA----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-url = "https://github.com/pamelayva-8/Proyecto-BI-Videojuegos-Steam/raw/refs/heads/main/steam_limpio_1.csv"
+url = "https://github.com/pamelayva-8/Proyecto-BI-Videojuegos-Steam/raw/refs/heads/main/steam_limpio_2.csv"
 
 
 df = pd.read_csv(url)
 
-#Sidebar
+#Sidebar----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 st.sidebar.header("Filtros")
 
 rating_min = st.sidebar.slider(
@@ -48,13 +48,13 @@ df_filtrado = df[
 ]
 
 
-# CONTENT
+# CONTENT----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 st.markdown("##  Videojuegos steam")
 
 st.divider()
 
-#Métricas
+#Métricas----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 col1, col2, col3 = st.columns(3)
 
 with col1:
@@ -76,7 +76,7 @@ with col3:
     )
 st.divider()
 
-#Pregunta
+#Pregunta----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 st.markdown("""
 ### Pregunta de investigación
 
@@ -90,7 +90,7 @@ calificación positiva por parte de los usuarios.
 """)
 
 st.divider()
-#Estadísticas descriptivas
+#Estadísticas descriptivas----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 st.markdown("### Estadísticas descriptivas")
 
 st.dataframe(
@@ -105,7 +105,7 @@ st.dataframe(
 )
 st.divider()
 
-#Videojuegos
+#Videojuegos----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 st.markdown("### Top 10 videojuegos mejor calificados")
 
@@ -134,7 +134,7 @@ if juego:
     st.dataframe(resultado.head(20))
 
 st.divider()
-#Gráfica 1
+#Gráfica 1------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 st.markdown("### Distribución del Rating")
 
 fig, ax = plt.subplots(figsize=(8,5))
@@ -156,7 +156,7 @@ La mayoría de los videojuegos presentan ratings superiores al 70%.
 """)
 st.divider()
 
-#Gráfica 2
+#Gráfica 2----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 st.markdown("### Rating vs Peak CCU")
 
 
@@ -182,7 +182,7 @@ Tener muchos usuarios simultáneos no garantiza una mejor calificación.
 
 st.divider()
 
-#Gráfica 3
+#Gráfica 3----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 st.markdown("### Rating vs Precio")
 
 fig, ax = plt.subplots(figsize=(8,5))
@@ -205,9 +205,9 @@ Los videojuegos económicos pueden obtener calificaciones tan altas como los má
 
 st.divider()
 
-#Gráfica 4: Heatmap
+#Gráfica 4: Heatmap ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-st.markdown("### Matriz de Correlación")
+st.markdown("### Matriz de Correlación General")
 
 st.info("""
 La matriz de correlación permite identificar qué tan relacionadas están las variables numéricas entre sí.
@@ -249,7 +249,7 @@ Las correlaciones con el rating son relativamente bajas, lo que indica que la sa
 
 st.divider()
 
-#Gráfica 5: Influencia del Publisher
+#Gráfica 5: Influencia del Publisher----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 st.markdown("### Influencia del Publisher")
 
 st.info("""
@@ -334,7 +334,7 @@ vars_interes = [
     'achievements'
 ]
 
-# Matriz de correlación
+# Matriz de correlación ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 matriz_corr = df_pub[vars_interes].corr()
 
 # Heatmap
@@ -361,14 +361,14 @@ Si presenta correlaciones positivas con el rating, podría indicar que algunos d
 """)
 
 st.divider()
-#ML
+#ML ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 st.markdown("### Machine Learning: ")
 st.info("""
-Se utilizó un modelo Random Forest para identificar qué variables tienen mayor influencia sobre la calificación positiva de un videojuego.
+Se utilizó un modelo Random Forest para estimar su calificación o rating por medio de las variables que tienen mayor influencia sobre la calificación positiva de un videojuego.
 """)
 
 st.divider()
-#Conclusiones
+#Conclusiones----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 st.markdown("## Conclusiones")
 
