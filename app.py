@@ -94,7 +94,7 @@ st.divider()
 st.markdown("### Estadísticas descriptivas")
 
 st.dataframe(
-    df[
+    df_filtrado[
         [
             'rating',
             'price',
@@ -258,10 +258,37 @@ Esta gráfica compara la distribución de ratings entre los principales publishe
 Cada caja representa cómo se distribuyen las calificaciones de los juegos publicados por una empresa.
 """)
 
+# Solo publishers válidos
+df_publishers = df_filtrado[
+    df_filtrado['primary_publisher'].notna()
+].copy()
+
+# Top 12 publishers
+top_publishers = (
+    df_publishers['primary_publisher']
+    .value_counts()
+    .head(12)
+    .index
+)
+
+# Juegos de esos publishers
+df_top_publishers = df_publishers[
+    df_publishers['primary_publisher'].isin(top_publishers)
+]
+
+# Ordenar por mediana de rating
+orden_mediana = (
+    df_top_publishers
+    .groupby('primary_publisher')['rating']
+    .median()
+    .sort_values(ascending=False)
+    .index
+)
+
 fig, ax = plt.subplots(figsize=(12,8))
 
 sns.boxplot(
-    data=df_filtrado,
+    data=df_top_publishers,
     x='rating',
     y='primary_publisher',
     order=orden_mediana,
