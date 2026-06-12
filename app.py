@@ -26,7 +26,7 @@ def show_header(text_title: str):
         st.caption("Universidad Panamericana")
 
 
-show_header("Dashboard Videojuegos Steam")
+show_header("Descifrando el éxito en Steam")
 
 st.divider()
 
